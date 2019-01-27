@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>example.network</groupId>
+  <artifactId>network</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <modules>
+    <module>udpEcho</module>
+    <module>tcpEcho</module>
+  </modules>
+
+  <packaging>pom</packaging>
+
+  <properties>
+    <java.version>11</java.version>
+
+    <!-- Profile sharing between spring & maven by resource filtering -->
+    <resource.delimiter>@</resource.delimiter>
+
+    <!-- For reports -->
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- How do I prevent "[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!"-->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- The encoding argument for the Java compiler -->
+    <!-- https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+
+    <!-- Compiler plugin configuration -->
+    <!-- https://stackoverflow.com/questions/38882080/specifying-java-version-in-maven-differences-between-properties-and-compiler-p -->
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+
+    <!-- START Version Control for Maven Plugins-->
+    <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+    <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+    <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+    <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+    <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
+    <maven-install-plugin.version>3.0.0-M1</maven-install-plugin.version>
+    <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
+    <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
+    <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+    <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M3</maven-failsafe-plugin.version>
+    <maven-help-plugin.version>3.1.1</maven-help-plugin.version>
+    <maven-invoker-plugin.version>3.2.0</maven-invoker-plugin.version>
+    <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+    <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
+    <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+    <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
+    <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+    <maven-archetype-plugin.version>3.0.1</maven-archetype-plugin.version>
+    <!-- END Version Control for Maven Plugins-->
+
+    <activation.version>1.1.1</activation.version>
+    <jaxb.api.version>2.3.0</jaxb.api.version>
+    <jaxb.runtime.version>2.3.0.1</jaxb.runtime.version>
+  </properties>
+
+  <profiles>
+    <profile>
+      <!-- Dev environment profile definition -->
+      <id>dev</id>
+      <properties>
+        <downloadSources>true</downloadSources>
+        <downloadJavadocs>true</downloadJavadocs>
+      </properties>
+      <build>
+        <plugins>
+          <!-- START Download sources if available -->
+          <!-- Binds by default to the lifecycle phase: generate-sources -->
+          <!-- https://maven.apache.org/plugins/maven-dependency-plugin/sources-mojo.html -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>download-sources</id>
+                <goals>
+                  <goal>sources</goal>
+                </goals>
+              </execution>
+
+            </executions>
+          </plugin>
+          <!-- END Download sources if available -->
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!-- Production environment profile definition -->
+      <id>prod</id>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <!-- For XML to marshal objects as it's been removed from JDK -->
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>${activation.version}</version>
+    </dependency>
+
+    <!-- For XML to marshal objects as it's been removed from JDK -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>${jaxb.api.version}</version>
+    </dependency>
+
+    <!-- Reference Implementation to JAXB-->
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxb.runtime.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <!-- START Apply values exchanging/filtering in properties for profiles support as example -->
+      <!-- Will link resources to maven properties -->
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/application*.yml</include>
+          <include>**/application*.yaml</include>
+          <include>**/application*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <excludes>
+          <exclude>**/application*.yml</exclude>
+          <exclude>**/application*.yaml</exclude>
+          <exclude>**/application*.properties</exclude>
+        </excludes>
+      </resource>
+      <!-- END Apply values exchanging/filtering in properties for profiles support as example -->
+    </resources>
+    <pluginManagement>
+      <!-- START lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <!-- By default group id is org.apache.maven.plugins -->
+      <!-- https://maven.apache.org/ref/3.6.0/maven-model/maven.html#class_plugin -->
+      <plugins>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${maven-dependency-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven-clean-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+            <release>${java.version}</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${maven-install-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven-site-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-archetype-plugin</artifactId>
+          <version>${maven-archetype-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${exec-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+      <!-- END lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    </pluginManagement>
+  </build>
+
+</project>
