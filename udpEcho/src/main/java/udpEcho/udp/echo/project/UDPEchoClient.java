@@ -1,5 +1,8 @@
 package udpEcho.udp.echo.project;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -15,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class UDPEchoClient {
 
     private static final String MESSAGE = "Hello, World!";
+    private static final Logger logger = LoggerFactory.getLogger(UDPEchoClient.class);
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
 
@@ -43,13 +47,13 @@ public class UDPEchoClient {
         // While receiver is NOT bound to specific address, do nothing !
         int i = 1;
         while (!receiver.isBound()){
-            System.out.println("" + i + ". not bound yet");
+            logger.info("" + i + ". not bound yet");
             i++;
             Thread.sleep(100);
         }
 
         // Send the message on the socket after being bound to specific address
-        System.out.println("SENDING: '" + MESSAGE);
+        logger.info("SENDING: '" + MESSAGE);
         datagramSocket.send(packet);
 
         /*
@@ -57,7 +61,7 @@ public class UDPEchoClient {
         not received yet. See {@link UDPReceiver.receive()}
         */
         String received = response.get();
-        System.out.println("SEND '" + MESSAGE + "' RECEIVED '" + received + "'");
+        logger.info("SEND '" + MESSAGE + "' RECEIVED '" + received + "'");
 
     }
 }
