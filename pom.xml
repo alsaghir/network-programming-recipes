@@ -10,6 +10,9 @@
   <modules>
     <module>udpEcho</module>
     <module>tcpEcho</module>
+    <module>tcpMultiThread</module>
+    <module>ThreadPoolTcpServer</module>
+    <module>niobf</module>
   </modules>
 
   <packaging>pom</packaging>
